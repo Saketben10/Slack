@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 
 import { FcGoogle } from "react-icons/fc";
@@ -12,18 +14,26 @@ import { Input } from "@/components/ui/input";
 
 import { useState } from "react";
 import { FaGithub } from "react-icons/fa";
+// import { SignInFlow } from "../types";
+import { renderState } from "@/reducers/render";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/store/render";
+
+// interface SignInCradProps {
+//   setState: (state: SignInFlow) => void;
+// }
 
 export const SignInCrad = () => {
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
-
+  const dispatch = useDispatch<AppDispatch>();
   return (
-    <Card className="w-full h-full p-8">
+    <Card className="w-full h-90 p-8    rounded-lg border border-gray-200 bg-gray-100 bg-opacity-50 backdrop-filter backdrop-blur-md custom-blur text-card-foreground shadow-lg transition duration-200 ease-in-out hover:shadow-x  ">
       <CardHeader className="px-0 pt-0">
         <CardTitle>Login to continue</CardTitle>
-        <CardDescription>
+        <CardDescription className="font-semibold text-white">
           use your email or another service to continue
         </CardDescription>
       </CardHeader>
@@ -79,9 +89,14 @@ export const SignInCrad = () => {
             Continue with Github
           </Button>
 
-          <p className="text-xs text-muted-foreground mt-2 mx-3 ">
+          <p className="text-xs text-white mt-2 mx-3 ">
             Don&apos;t have an account?
-            <span className="text-sky-700 hover:underline cursor-pointer">
+            <span
+              className="text-sky-400 hover:underline cursor-pointer"
+              onClick={() => {
+                dispatch(renderState("sign-up"));
+              }}
+            >
               sign-up
             </span>
           </p>
