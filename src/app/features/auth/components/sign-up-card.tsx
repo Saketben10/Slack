@@ -27,13 +27,14 @@ export const SignUpCard = () => {
   const [form, setForm] = useState({
     email: "",
     password: "",
+    confirmpassword: "",
   });
   const dispatch = useDispatch<AppDispatch>();
   return (
-    <Card className="w-full h-full p-8">
+    <Card className="w-full h-auto p-8    rounded-lg border border-gray-200 bg-gray-100 bg-opacity-50 backdrop-filter backdrop-blur-md custom-blur text-card-foreground shadow-lg transition duration-200 ease-in-out hover:shadow-x  ">
       <CardHeader className="px-0 pt-0">
-        <CardTitle>Login to continue</CardTitle>
-        <CardDescription>
+        <CardTitle>Sign-Up to continue</CardTitle>
+        <CardDescription className="text-white font-semibold">
           use your email or another service to continue
         </CardDescription>
       </CardHeader>
@@ -62,14 +63,33 @@ export const SignUpCard = () => {
             }}
             required={true}
           />
-          <Button type="submit" className="w-full" size={"lg"} disabled={false}>
-            Login
+          {form.password && (
+            <Input
+              type="password"
+              placeholder="confirm-password"
+              onChange={(e) => {
+                setForm({
+                  ...form,
+                  confirmpassword: e.target.value,
+                });
+              }}
+              required={true}
+            />
+          )}
+          <Button
+            type="submit"
+            className="w-full"
+            size={"lg"}
+            disabled={false}
+            variant={"app"}
+          >
+            Create Account
           </Button>
         </form>
 
-        <div className="flex flex-col gap-y-2.5 mt-4 ">
+        <div className="flex flex-col gap-y-2.5 mt-6 ">
           <Button
-            className="w-full relative"
+            className="w-full relative  "
             disabled={false}
             onClick={() => {}}
             variant={"outline"}
@@ -92,7 +112,7 @@ export const SignUpCard = () => {
           <p className="text-xs text-muted-foreground mt-2 mx-3 ">
             Already have an account?
             <span
-              className="text-sky-700 hover:underline cursor-pointer"
+              className="text-sky-400 hover:underline cursor-pointer hover:text-[#59b5b6]  font-extrabold "
               onClick={() => {
                 dispatch(renderState("signin"));
               }}

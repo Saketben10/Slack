@@ -14,7 +14,7 @@ export const AuthScreen = () => {
     <div className="relative h-screen flex items-center justify-center">
       {/* Image as a background */}
       <Image
-        src={images.nature} // Use the imported image here
+        src={images.space} // Use the imported image here
         alt="Nature"
         layout="fill" // This makes the image fill its container
         objectFit="cover" // This makes the image cover the entire container

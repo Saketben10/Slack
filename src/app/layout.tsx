@@ -1,9 +1,12 @@
 import { Toaster } from "@/components/ui/toaster";
 import type { Metadata } from "next";
 import "./globals.css";
+import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
+import { ConvexClientProvider } from "@/components/ConvexClientProvider";
+import { Wrapper } from "@/wrapper";
 export const metadata: Metadata = {
-  title: "SLACK CLONE",
-  description: "NEXT APPLICATION",
+  title: "Slck clone",
+  description: "next js app",
 };
 
 export default function RootLayout({
@@ -13,10 +16,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
-        {children}
-        <Toaster />
-      </body>
+      <ConvexAuthNextjsServerProvider>
+        <body>
+          <Wrapper className="">
+            <ConvexClientProvider> {children}</ConvexClientProvider>
+            <Toaster />
+          </Wrapper>
+        </body>
+      </ConvexAuthNextjsServerProvider>
     </html>
   );
 }

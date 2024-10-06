@@ -63,11 +63,11 @@ export const SignInCrad = () => {
             required={true}
           />
           <Button type="submit" className="w-full" size={"lg"} disabled={false}>
-            Continue
+            Login
           </Button>
         </form>
 
-        <div className="flex flex-col gap-y-2.5 mt-4 ">
+        <div className="flex flex-col gap-y-2.5 mt-6 ">
           <Button
             className="w-full relative"
             disabled={false}
@@ -92,7 +92,7 @@ export const SignInCrad = () => {
           <p className="text-xs text-white mt-2 mx-3 ">
             Don&apos;t have an account?
             <span
-              className="text-sky-400 hover:underline cursor-pointer"
+              className="text-sky-400 hover:underline cursor-pointer hover:text-[#59b5b6]  font-extrabold "
               onClick={() => {
                 dispatch(renderState("sign-up"));
               }}
