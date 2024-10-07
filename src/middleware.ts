@@ -11,6 +11,10 @@ export default convexAuthNextjsMiddleware((request, { convexAuth }) => {
     return nextjsMiddlewareRedirect(request, "/auth");
   }
 
+  if (isSignin(request) && convexAuth.isAuthenticated()) {
+    return nextjsMiddlewareRedirect(request, "/");
+  }
+
   //TODO:  reidrect user to product if  authenticated
 });
 

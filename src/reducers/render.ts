@@ -3,11 +3,13 @@ import { createSlice } from "@reduxjs/toolkit";
 interface renderState {
   state: string;
   auth: boolean;
+  pending: boolean;
 }
 
 const initialState: renderState = {
   state: "",
   auth: false,
+  pending: false,
 };
 
 const renderSlice = createSlice({
@@ -21,9 +23,12 @@ const renderSlice = createSlice({
     authStatus: (state, action) => {
       state.auth = action.payload;
     },
+    pendingStatus: (state, action) => {
+      state.pending = action.payload;
+    },
   },
 });
 
-export const { renderState, authStatus } = renderSlice.actions;
+export const { renderState, authStatus, pendingStatus } = renderSlice.actions;
 
 export default renderSlice.reducer;

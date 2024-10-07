@@ -14,22 +14,77 @@ import { Input } from "@/components/ui/input";
 
 import { useState } from "react";
 import { FaGithub } from "react-icons/fa";
-// import { SignInFlow } from "../types";
-import { renderState } from "@/reducers/render";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/store/render";
 
-// interface SignInCradProps {
-//   setState: (state: SignInFlow) => void;
-// }
+import { authStatus, pendingStatus, renderState } from "@/reducers/render";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store/render";
+import { TriangleAlert } from "lucide-react";
+import { useAuthActions } from "@convex-dev/auth/react";
+import { useToast } from "@/hooks/use-toast";
 
 export const SignUpCard = () => {
+  const { toast } = useToast();
+
+  const [ToastConfig, setToastConfig] = useState({
+    title: "",
+    description: "",
+  });
+
+  console.log(ToastConfig);
+
   const [form, setForm] = useState({
     email: "",
     password: "",
     confirmpassword: "",
   });
+
+  const showToast = (title: string, description: string) => {
+    setToastConfig({
+      title,
+      description,
+    });
+
+    toast({ title, description });
+  };
+
+  const [error, setError] = useState("");
+  const { signIn } = useAuthActions();
   const dispatch = useDispatch<AppDispatch>();
+  const pending = useSelector((state: RootState) => state.render.pending);
+
+  const handleSignInProvider = (value: "github" | "google") => {
+    dispatch(pendingStatus(true));
+    signIn(value).finally(() => {
+      pendingStatus(false);
+    });
+  };
+
+  //function to handleForm submission
+  const onPasswordSignUp = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (form.password !== form.confirmpassword) {
+      setError("password is not matching");
+      return;
+    }
+
+    dispatch(pendingStatus(true));
+    signIn("password", {
+      email: form.email,
+      password: form.password,
+
+      flow: "signUp",
+    })
+      .catch((err) => {
+        console.log(err);
+        setError("invalid Crendtials");
+      })
+      .finally(() => {
+        dispatch(pendingStatus(false));
+        dispatch(authStatus(true));
+        showToast("Congratulations ", "acccount created");
+      });
+  };
+
   return (
     <Card className="w-full h-auto p-8    rounded-lg border border-gray-200 bg-gray-100 bg-opacity-50 backdrop-filter backdrop-blur-md custom-blur text-card-foreground shadow-lg transition duration-200 ease-in-out hover:shadow-x  ">
       <CardHeader className="px-0 pt-0">
@@ -38,10 +93,17 @@ export const SignUpCard = () => {
           use your email or another service to continue
         </CardDescription>
       </CardHeader>
+
+      {error && (
+        <div className="bg-destructive/15 p-3 rounded-md flex items-center gap-x-2 test-sm">
+          <TriangleAlert className="size-4 mb-2" />
+          <p>{error}</p>
+        </div>
+      )}
       <CardContent>
-        <form className="space-y-2.5">
+        <form className="space-y-2.5" onSubmit={onPasswordSignUp}>
           <Input
-            disabled={false}
+            disabled={pending}
             type="email"
             placeholder="Email"
             onChange={(e) => {
@@ -80,7 +142,7 @@ export const SignUpCard = () => {
             type="submit"
             className="w-full"
             size={"lg"}
-            disabled={false}
+            disabled={pending}
             variant={"app"}
           >
             Create Account
@@ -90,8 +152,10 @@ export const SignUpCard = () => {
         <div className="flex flex-col gap-y-2.5 mt-6 ">
           <Button
             className="w-full relative  "
-            disabled={false}
-            onClick={() => {}}
+            disabled={pending}
+            onClick={() => {
+              handleSignInProvider("google");
+            }}
             variant={"outline"}
             size={"lg"}
           >
@@ -100,8 +164,10 @@ export const SignUpCard = () => {
           </Button>
           <Button
             className="w-full relative"
-            disabled={false}
-            onClick={() => {}}
+            disabled={pending}
+            onClick={() => {
+              handleSignInProvider("github");
+            }}
             variant={"outline"}
             size={"lg"}
           >
@@ -109,7 +175,7 @@ export const SignUpCard = () => {
             Continue with Github
           </Button>
 
-          <p className="text-xs text-muted-foreground mt-2 mx-3 ">
+          <p className="text-xs  text-white font-semibold text-muted-foreground mt-2 mx-3 ">
             Already have an account?
             <span
               className="text-sky-400 hover:underline cursor-pointer hover:text-[#59b5b6]  font-extrabold "
