@@ -22,10 +22,16 @@ import { TriangleAlert } from "lucide-react";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useToast } from "@/hooks/use-toast";
 
+interface ToastConfig {
+  variant: "done" | "destructive" | "default";
+  title: string;
+  description: string;
+}
 export const SignUpCard = () => {
   const { toast } = useToast();
 
-  const [ToastConfig, setToastConfig] = useState({
+  const [ToastConfig, setToastConfig] = useState<ToastConfig>({
+    variant: "default",
     title: "",
     description: "",
   });
@@ -33,18 +39,24 @@ export const SignUpCard = () => {
   console.log(ToastConfig);
 
   const [form, setForm] = useState({
+    name: "",
     email: "",
     password: "",
     confirmpassword: "",
   });
 
-  const showToast = (title: string, description: string) => {
+  const showToast = (
+    variant: "done" | "default" | "destructive",
+    title: string,
+    description: string
+  ) => {
     setToastConfig({
+      variant,
       title,
       description,
     });
 
-    toast({ title, description });
+    toast({ title, description, variant });
   };
 
   const [error, setError] = useState("");
@@ -54,9 +66,16 @@ export const SignUpCard = () => {
 
   const handleSignInProvider = (value: "github" | "google") => {
     dispatch(pendingStatus(true));
-    signIn(value).finally(() => {
-      pendingStatus(false);
-    });
+    signIn(value)
+      .catch((err) => setError(err))
+      .finally(() => {
+        dispatch(pendingStatus(false));
+        showToast(
+          "done",
+          "account Created Ssuccessfully !",
+          "congratulations!"
+        );
+      });
   };
 
   //function to handleForm submission
@@ -68,20 +87,25 @@ export const SignUpCard = () => {
     }
 
     dispatch(pendingStatus(true));
+
     signIn("password", {
+      name: form.name,
       email: form.email,
       password: form.password,
 
       flow: "signUp",
     })
+      .then(() =>
+        showToast("done", "account Created Ssuccessfully !", "congratulations!")
+      )
       .catch((err) => {
         console.log(err);
         setError("invalid Crendtials");
+        showToast("destructive", "oops! ", "invalid credentials");
       })
       .finally(() => {
         dispatch(pendingStatus(false));
         dispatch(authStatus(true));
-        showToast("Congratulations ", "acccount created");
       });
   };
 
@@ -104,35 +128,48 @@ export const SignUpCard = () => {
         <form className="space-y-2.5" onSubmit={onPasswordSignUp}>
           <Input
             disabled={pending}
-            type="email"
-            placeholder="Email"
-            onChange={(e) => {
+            placeholder="Full Name"
+            onChange={(evt) => {
               setForm({
                 ...form,
-                email: e.target.value,
+                name: evt.target.value,
               });
             }}
             required={true}
           />
           <Input
-            type="password"
-            placeholder="password"
-            onChange={(e) => {
+            disabled={pending}
+            type="email"
+            placeholder="Email"
+            onChange={(evt) => {
               setForm({
                 ...form,
-                password: e.target.value,
+                email: evt.target.value,
+              });
+            }}
+            required={true}
+          />
+          <Input
+            disabled={pending}
+            type="password"
+            placeholder="password"
+            onChange={(evt) => {
+              setForm({
+                ...form,
+                password: evt.target.value,
               });
             }}
             required={true}
           />
           {form.password && (
             <Input
+              disabled={pending}
               type="password"
               placeholder="confirm-password"
-              onChange={(e) => {
+              onChange={(evt) => {
                 setForm({
                   ...form,
-                  confirmpassword: e.target.value,
+                  confirmpassword: evt.target.value,
                 });
               }}
               required={true}
