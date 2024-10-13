@@ -2,15 +2,18 @@
 
 import { useEffect, useMemo } from "react";
 import { UserButton } from "./features/auth/components/user-Button";
-import { useGetWorkspaces } from "./features/workspaces/use-get-workspaces";
+import { useGetWorkspaces } from "./api/hooks/use-get-workspaces";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/render";
-import { workspaceStatus } from "@/reducers/render";
+import { setOpen } from "@/reducers/render";
+import { useRouter } from "next/navigation";
 
 const Home = () => {
   const { data, isLoading } = useGetWorkspaces();
   const open = useSelector((state: RootState) => state.render.open);
   const dispatch = useDispatch<AppDispatch>();
+
+  const router = useRouter();
   const workspaceId = useMemo(() => {
     return data?.[0]?._id;
   }, [data]);
@@ -19,14 +22,15 @@ const Home = () => {
     if (isLoading) return;
 
     if (workspaceId) {
-      console.log("current workspace");
+      router.replace(`/workspace/${workspaceId}`);
+      dispatch(setOpen(false));
     } else if (!open) {
-      dispatch(workspaceStatus(true));
-      console.log(data);
+      dispatch(setOpen(true));
+      console.log();
     } else {
       console.log("create workspaces");
     }
-  }, [workspaceId, data, isLoading, open, dispatch]);
+  }, [workspaceId, data, isLoading, open, dispatch, router]);
   return (
     <>
       <div className="h-full flex justify-center items-center">

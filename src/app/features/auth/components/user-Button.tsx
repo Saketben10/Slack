@@ -1,6 +1,6 @@
 "use client";
 
-import { UseCurrentUser } from "@/app/api/user-current";
+import { UseCurrentUser } from "@/app/api/hooks/user-current";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,

@@ -8,7 +8,7 @@ import { SignUpCard } from "./sign-up-card";
 import Image from "next/image";
 
 export const AuthScreen = () => {
-  const state = useSelector((state: RootState) => state.render.state);
+  const state = useSelector((state: RootState) => state.render.render);
 
   return (
     <>
