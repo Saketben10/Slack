@@ -49,7 +49,7 @@ export const CreateWorkspaceModal = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    mutate(
+    const iD = mutate(
       { name },
       {
         onSuccess(id) {
@@ -59,6 +59,8 @@ export const CreateWorkspaceModal = () => {
         },
       }
     );
+
+    iD.then((res) => console.log("data of promise:", res));
   };
   const open = useSelector((state: RootState) => state.render.open);
   const dispatch = useDispatch<AppDispatch>();

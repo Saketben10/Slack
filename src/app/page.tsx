@@ -26,7 +26,6 @@ const Home = () => {
       dispatch(setOpen(false));
     } else if (!open) {
       dispatch(setOpen(true));
-      console.log();
     } else {
       console.log("create workspaces");
     }
