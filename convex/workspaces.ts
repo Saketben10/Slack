@@ -31,3 +31,17 @@ export const Get = query({
     return await ctx.db.query("workspaces").collect();
   },
 });
+
+export const GetbyId = query({
+  args: {
+    id: v.id("workspaces"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await auth.getUserId(ctx);
+    if (!userId) {
+      throw new Error("unauthorized");
+    }
+
+    return ctx.db.get(args.id);
+  },
+});

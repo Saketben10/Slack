@@ -1,13 +1,17 @@
-interface WorkSpaceIdPageProps {
-  params: {
-    workspaceId: string;
-  };
-}
+"use client";
+import { useCurrentWorkspaces } from "@/app/api/hooks/use-current-workspace";
+import { useWorkspaceId } from "@/hooks/use-params";
 
-const WorkspaceIdPage = ({ params }: WorkSpaceIdPageProps) => {
+const WorkspaceIdPage = () => {
+  const workspaceId = useWorkspaceId();
+  const { data } = useCurrentWorkspaces({ id: workspaceId });
+
   return (
-    <div className="flex justify-center items-center">
-      Id : {params.workspaceId}
+    <div className=" ">
+      <div className=" ">
+        data :{JSON.stringify(data)}
+        <div>id:{workspaceId}</div>
+      </div>
     </div>
   );
 };
