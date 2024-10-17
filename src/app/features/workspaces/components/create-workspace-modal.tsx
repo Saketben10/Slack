@@ -53,7 +53,7 @@ export const CreateWorkspaceModal = () => {
       { name },
       {
         onSuccess(id) {
-          router.push(`/workspace${id}`);
+          router.push(`/workspace/${id}`);
           dispatch(setOpen(false));
           showToast("done", "Congratulations !", "workSpace Created");
         },

@@ -13,7 +13,7 @@ import { useAuthActions } from "@convex-dev/auth/react";
 
 import { Loader, LogOut } from "lucide-react";
 
-export const UserButton = ({ size }: { size: number }) => {
+export const UserButton = () => {
   const { signOut } = useAuthActions();
   const { data, isloading } = UseCurrentUser();
 
@@ -29,7 +29,7 @@ export const UserButton = ({ size }: { size: number }) => {
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger className="outline-none relative">
-        <Avatar className={`size-${size} hover:opacity-75 transition`}>
+        <Avatar className={`size-8 hover:opacity-75 transition`}>
           <AvatarImage alt={name} src={image} />
           <AvatarFallback>{avatarFallBack}</AvatarFallback>
         </Avatar>
