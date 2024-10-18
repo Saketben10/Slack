@@ -33,7 +33,7 @@ const Home = () => {
   return (
     <>
       <div className="h-full flex justify-center items-center">
-        <UserButton size={20} />
+        <UserButton />
       </div>
     </>
   );

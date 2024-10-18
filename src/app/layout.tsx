@@ -19,7 +19,7 @@ export default function RootLayout({
     <html lang="en">
       <ConvexAuthNextjsServerProvider>
         <body>
-          <Wrapper className="">
+          <Wrapper className=" ">
             <ConvexClientProvider>
               <Modals />
               {children}

@@ -2,6 +2,7 @@
 
 import { Provider } from "react-redux";
 import { store } from "./store/render";
+import { cn } from "./lib/utils";
 
 interface WrapperPorps {
   className: string;
@@ -12,7 +13,7 @@ export const Wrapper = ({ className, children }: WrapperPorps) => {
   return (
     <>
       <Provider store={store}>
-        <div className={`h-full w-full mx-2 ${className}`}>{children}</div>{" "}
+        <div className={cn(className)}>{children}</div>{" "}
       </Provider>
     </>
   );

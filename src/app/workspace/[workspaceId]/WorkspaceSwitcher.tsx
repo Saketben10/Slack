@@ -30,7 +30,7 @@ export const WorKspaceSwitcher = () => {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
+      <DropdownMenuTrigger asChild>
         <Button className="size-9 relative overflow-hidden bh-[#ABABAD]  hover:[#ABABAD]/79 text-slate-100 font-semibold text-xl  ">
           {workspaceLoading ? (
             <Loader className="size-4 animate-spin shrink-0 " />
@@ -44,10 +44,10 @@ export const WorKspaceSwitcher = () => {
           className="cursor-pointer flex justify-around gap-x-2 capitalize"
           onClick={() => router.push(`/workspace/${workspaceId}`)}
         >
-          {workspacesLoading ? "Loading..." : workspace?.name}
-          <span className="text-xs text-muted-foreground">
-            Active Workspaces
+          <span className="font-bold font-mono ">
+            {workspacesLoading ? "Loading..." : workspace?.name}
           </span>
+          <span className="text-xs text-green-400">Active Workspaces</span>
         </DropdownMenuItem>
         {filterWorkspaces?.map((workspace) => (
           <DropdownMenuItem
@@ -55,9 +55,7 @@ export const WorKspaceSwitcher = () => {
             className="cursor-pointer capitalize"
             onClick={() => router.push(`/workspace/${workspace._id}`)}
           >
-            {" "}
-            <div className="size-9 relative overflow-hidden bg-[#f2f2f2] text-slate-800 font-semibold text-lg rounded-md flex items-center justify-center mr-2">
-              {" "}
+            <div className="size-9 relative overflow-hidden bg-[#fbff03] text-slate-800 font-semibold text-lg rounded-md flex items-center justify-center mr-2">
               {workspace.name.charAt(0).toUpperCase()}
             </div>
             {workspace?.name}
