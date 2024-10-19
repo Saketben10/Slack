@@ -5,7 +5,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 
 // method to generate unique id
 
-const GenerateCode = () => {
+const GenerateCode = (): string => {
   const code = Array.from(
     {
       length: 6,

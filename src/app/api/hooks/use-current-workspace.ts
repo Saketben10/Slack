@@ -9,6 +9,6 @@ interface useGetWorkspacesPorps {
 export const useCurrentWorkspaces = ({ id }: useGetWorkspacesPorps) => {
   const data = useQuery(api.workspaces.GetbyId, { id });
   const isLoading = data === undefined;
-  console.log(data);
+
   return { data, isLoading };
 };
