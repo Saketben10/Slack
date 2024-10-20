@@ -3,6 +3,7 @@ import { useCurrentMember } from "../../members/api/hooks/use-current-member";
 
 import { useCurrentWorkspaces } from "@/app/api/hooks/use-current-workspace";
 import { AlertTriangle, Loader } from "lucide-react";
+import { WorkSpaceHeader } from "./WorkSpaceHeader";
 
 export const WorkspaceSidebar = () => {
   const workspaceId = useWorkspaceId();
@@ -21,7 +22,7 @@ export const WorkspaceSidebar = () => {
     );
   }
 
-  if (!workspaceisLoading || !memberisLoading) {
+  if (!currentworkspace || !member) {
     return (
       <div className="flex flex-col  gap-y-2 bg-[#5E2C5F] h-full items-center justify-center">
         <AlertTriangle className="size-5 text-white" />
@@ -31,9 +32,11 @@ export const WorkspaceSidebar = () => {
   }
 
   return (
-    <div>
-      <div>{member?.map((mem) => mem.role)}</div>
-      <div>{currentworkspace?.name}</div>
+    <div className="flex flex-col bg-[#5E2C5F]">
+      <WorkSpaceHeader
+        workspace={currentworkspace}
+        isAdmin={member?.role === "admin"}
+      />
     </div>
   );
 };
