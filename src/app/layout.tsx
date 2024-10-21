@@ -1,4 +1,5 @@
 import { Toaster } from "@/components/ui/toaster";
+import { Toaster as ToasterAgain } from "@/components/ui/sonner";
 import type { Metadata } from "next";
 import "./globals.css";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
@@ -25,6 +26,7 @@ export default function RootLayout({
               <Modals />
               {children}
             </ConvexClientProvider>
+            <ToasterAgain />
             <Toaster />
           </Wrapper>
         </body>

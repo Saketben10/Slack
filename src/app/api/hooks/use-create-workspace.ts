@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from "react";
 import { useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
+import Error from "next/error";
 
 type RequestType = { name: string };
 type ResponseType = Id<"workspaces">;
@@ -38,6 +39,10 @@ export const useCreateWorkSpace = () => {
         return response;
       } catch {
         options?.onError?.();
+        if (options?.thowError) {
+          throw Error;
+        }
+
         setError(true);
         setStatus("error");
       } finally {
