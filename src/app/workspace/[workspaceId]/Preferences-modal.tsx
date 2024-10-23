@@ -20,6 +20,7 @@ import { TrashIcon } from "lucide-react";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useConfirm } from "@/hooks/use-confirm";
 
 interface PreferencesModalProps {
   open: boolean;
@@ -36,7 +37,9 @@ export const PreferencesModal = ({
 }: PreferencesModalProps) => {
   const [value, setValue] = useState(initialValue);
   const [editOpen, setEditOpen] = useState(false);
-
+const  [confirm,ConfirmDialog]=useConfirm('are you sure?',
+  'This Action is ireverssible'
+)
   const router = useRouter();
 
   const { update: updateWorkspace, isPending: updateisPending } =
@@ -60,7 +63,8 @@ export const PreferencesModal = ({
     );
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
+    const ok = await confirm()
     removeWorkspace(
       { id },
       {
