@@ -26,7 +26,10 @@ export const UserButton = () => {
   const { name, image } = data;
   const avatarFallBack = name!.charAt(0).toUpperCase();
 
-  return (
+return (
+          <
+          >
+        
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger className="outline-none relative">
         <Avatar className={`size-8 hover:opacity-75 transition`}>
@@ -46,5 +49,6 @@ export const UserButton = () => {
         <DropdownMenuItem>Subscription</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+    </>
   );
 };

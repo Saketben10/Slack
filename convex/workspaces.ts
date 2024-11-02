@@ -43,8 +43,13 @@ export const Create = mutation({
       role: "admin",
     });
 
+    const channelId = await ctx.db.insert("channels", {
+      name: "general",
+      workspaceID,
+    });
+
     // returns member as well as workspaceId
-    return { workspaceID, memberID };
+    return { workspaceID, memberID, channelId };
   },
 });
 

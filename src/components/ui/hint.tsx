@@ -8,7 +8,7 @@ import { ReactNode } from "react";
 
 interface TooltipProps {
   label: string;
-  align?: "start" | "center" | "end";
+  align?: "start" | "center" | "end" | undefined;
   side?: "top" | "bottom" | "left" | "right" | undefined;
   children: ReactNode;
 }

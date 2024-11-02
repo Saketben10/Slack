@@ -37,7 +37,7 @@ export const PreferencesModal = ({
 }: PreferencesModalProps) => {
   const [value, setValue] = useState(initialValue);
   const [editOpen, setEditOpen] = useState(false);
-const  [confirm,ConfirmDialog]=useConfirm('are you sure?',
+const  [setconfirm,ConfirmDialog]=useConfirm('are you sure?',
   'This Action is ireverssible'
 )
   const router = useRouter();
@@ -64,7 +64,8 @@ const  [confirm,ConfirmDialog]=useConfirm('are you sure?',
   };
 
   const handleDelete = async () => {
-    const ok = await confirm()
+    const ok = await setconfirm()
+    if(!ok) return
     removeWorkspace(
       { id },
       {
@@ -80,6 +81,8 @@ const  [confirm,ConfirmDialog]=useConfirm('are you sure?',
   };
 
   return (
+    <>
+   < ConfirmDialog/>
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="p-0 bg-gray-50 overflow-hidden">
         <DialogHeader className="p-4 border-b bg-white">
@@ -137,5 +140,6 @@ const  [confirm,ConfirmDialog]=useConfirm('are you sure?',
         </div>
       </DialogContent>
     </Dialog>
+    </>
   );
 };
