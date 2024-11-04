@@ -12,6 +12,7 @@ import {
 import { WorkSpaceHeader } from "./WorkSpaceHeader";
 import { SidebarItem } from "@/app/workspace/[workspaceId]/SidebarItem";
 import { useCurrentChannels } from "../../channels/api/hooks/use-get-channels";
+import { WorkSpaceSection } from "./WolrkSpaceSection";
 
 export const WorkspaceSidebar = () => {
   const workspaceId = useWorkspaceId();
@@ -55,15 +56,17 @@ export const WorkspaceSidebar = () => {
           Icon={MessageSquareText}
           label={"Threads"}
           id="threads"
-          variant={"active"}
+          variant={"default"}
         />
         <SidebarItem
           Icon={SendHorizontal}
           label={"Draft and Sent"}
           id="drafts"
-          variant={"active"}
+          variant={"default"}
         />
+      </div>
 
+      <WorkSpaceSection hint="New Channel" label="channels" onNew={() => {}}>
         {channels?.map((item) => (
           <div key={item._id}>
             <SidebarItem
@@ -74,7 +77,7 @@ export const WorkspaceSidebar = () => {
             />
           </div>
         ))}
-      </div>
+      </WorkSpaceSection>
     </div>
   );
 };

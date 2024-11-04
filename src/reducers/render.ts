@@ -5,6 +5,7 @@ interface renderState {
   pending: boolean;
   auth: boolean;
   render: string;
+  toggle: boolean;
 }
 
 const initialState: renderState = {
@@ -12,6 +13,7 @@ const initialState: renderState = {
   pending: false,
   auth: false,
   render: "",
+  toggle: false,
 };
 
 const renderSlice = createSlice({
@@ -30,10 +32,13 @@ const renderSlice = createSlice({
     renderState: (state, action) => {
       state.render = action.payload;
     },
+    toggleState: (state) => {
+      state.toggle = !state.toggle;
+    },
   },
 });
 
-export const { setOpen, pendingStatus, authStatus, renderState } =
+export const { setOpen, pendingStatus, authStatus, renderState, toggleState } =
   renderSlice.actions;
 
 export default renderSlice.reducer;
