@@ -22,6 +22,7 @@ const renderSlice = createSlice({
   reducers: {
     pendingStatus: (state, action) => {
       state.pending = action.payload;
+      console.log(action.type);
     },
     setOpen: (state, action) => {
       state.open = action.payload;

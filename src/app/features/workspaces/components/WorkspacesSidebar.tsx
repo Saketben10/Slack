@@ -1,7 +1,9 @@
 import { useWorkspaceId } from "@/hooks/use-params";
 import { useCurrentMember } from "../../members/api/hooks/use-current-member";
-
 import { useCurrentWorkspaces } from "@/app/api/hooks/use-current-workspace";
+import { useCurrentChannels } from "../../channels/api/hooks/use-get-channels";
+import { useGetMembers } from "../../members/api/hooks/use-get-member";
+
 import {
   AlertTriangle,
   HashIcon,
@@ -9,9 +11,11 @@ import {
   MessageSquareText,
   SendHorizontal,
 } from "lucide-react";
-import { WorkSpaceHeader } from "./WorkSpaceHeader";
+
 import { SidebarItem } from "@/app/workspace/[workspaceId]/SidebarItem";
-import { useCurrentChannels } from "../../channels/api/hooks/use-get-channels";
+import { UserItem } from "@/app/workspace/[workspaceId]/UserItem";
+
+import { WorkSpaceHeader } from "./WorkSpaceHeader";
 import { WorkSpaceSection } from "./WolrkSpaceSection";
 
 export const WorkspaceSidebar = () => {
@@ -21,6 +25,10 @@ export const WorkspaceSidebar = () => {
   });
 
   const { data: member, isLoading: memberisLoading } = useCurrentMember({
+    workspaceId,
+  });
+
+  const { data: members } = useGetMembers({
     workspaceId,
   });
 
@@ -76,6 +84,20 @@ export const WorkspaceSidebar = () => {
               variant={"default"}
             />
           </div>
+        ))}
+      </WorkSpaceSection>
+      <WorkSpaceSection
+        hint="New direct message"
+        label="DirectMessage"
+        onNew={() => {}}
+      >
+        {members?.map((item) => (
+          <UserItem
+            key={item._id}
+            id={item._id}
+            label={item.user.name}
+            image={item.user.image}
+          />
         ))}
       </WorkSpaceSection>
     </div>

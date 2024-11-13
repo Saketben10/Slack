@@ -1,7 +1,12 @@
 import { defineSchema, defineTable } from "convex/server";
 import { authTables } from "@convex-dev/auth/server";
 import { v } from "convex/values";
+import { QueryCtx } from "./_generated/server";
+import { Id } from "./_generated/dataModel";
 
+const populateUser = (ctx: QueryCtx, id: Id<"users">) => {
+  return ctx.db.get(id);
+};
 const schema = defineSchema({
   ...authTables,
   workspaces: defineTable({

@@ -7,8 +7,10 @@ interface useCurrentMemberProps {
   workspaceId: Id<"workspaces">;
 }
 
-export const useCurrentMember = ({ workspaceId }: useCurrentMemberProps) => {
-  const data = useQuery(api.member.Current, { workspaceId });
+export const useCurrentMember = ({
+  workspaceId: workspaceId,
+}: useCurrentMemberProps) => {
+  const data = useQuery(api.member.Current, { workspaceId: workspaceId });
   const isLoading = data === undefined;
 
   return { data, isLoading };
