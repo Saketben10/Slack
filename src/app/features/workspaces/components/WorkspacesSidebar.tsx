@@ -17,6 +17,9 @@ import { UserItem } from "@/app/workspace/[workspaceId]/UserItem";
 
 import { WorkSpaceHeader } from "./WorkSpaceHeader";
 import { WorkSpaceSection } from "./WolrkSpaceSection";
+import { channelToggle } from "../../../../reducers/render";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/store/render";
 
 export const WorkspaceSidebar = () => {
   const workspaceId = useWorkspaceId();
@@ -34,6 +37,8 @@ export const WorkspaceSidebar = () => {
 
   const { data: currentworkspace, isLoading: workspaceisLoading } =
     useCurrentWorkspaces({ id: workspaceId });
+
+  const dispatch = useDispatch<AppDispatch>();
 
   if (workspaceisLoading || memberisLoading) {
     return (
@@ -53,53 +58,64 @@ export const WorkspaceSidebar = () => {
   }
 
   return (
-    <div className="flex flex-col bg-[#5E2C5F]">
-      <WorkSpaceHeader
-        workspace={currentworkspace}
-        isAdmin={member?.role === "admin"}
-      />
-
-      <div className="flex flex-col px-2 mt-3 space-y-2 ">
-        <SidebarItem
-          Icon={MessageSquareText}
-          label={"Threads"}
-          id="threads"
-          variant={"default"}
+    <>
+      <div className="flex flex-col bg-[#5E2C5F]">
+        <WorkSpaceHeader
+          workspace={currentworkspace}
+          isAdmin={member?.role === "admin"}
         />
-        <SidebarItem
-          Icon={SendHorizontal}
-          label={"Draft and Sent"}
-          id="drafts"
-          variant={"default"}
-        />
-      </div>
-
-      <WorkSpaceSection hint="New Channel" label="channels" onNew={() => {}}>
-        {channels?.map((item) => (
-          <div key={item._id}>
-            <SidebarItem
-              Icon={HashIcon}
-              label={!channelisLoading ? item.name : "Loading channel name...."}
-              id={item._id}
-              variant={"default"}
-            />
-          </div>
-        ))}
-      </WorkSpaceSection>
-      <WorkSpaceSection
-        hint="New direct message"
-        label="DirectMessage"
-        onNew={() => {}}
-      >
-        {members?.map((item) => (
-          <UserItem
-            key={item._id}
-            id={item._id}
-            label={item.user.name}
-            image={item.user.image}
+        <div className="flex flex-col px-2 mt-3 space-y-2 ">
+          <SidebarItem
+            Icon={MessageSquareText}
+            label={"Threads"}
+            id="threads"
+            variant={"default"}
           />
-        ))}
-      </WorkSpaceSection>
-    </div>
+          <SidebarItem
+            Icon={SendHorizontal}
+            label={"Draft and Sent"}
+            id="drafts"
+            variant={"default"}
+          />
+        </div>
+
+        <WorkSpaceSection
+          hint="New Channel"
+          label="channels"
+          onNew={
+            member.role === "admin"
+              ? () => dispatch(channelToggle(true))
+              : undefined
+          }
+        >
+          {channels?.map((item) => (
+            <div key={item._id}>
+              <SidebarItem
+                Icon={HashIcon}
+                label={
+                  !channelisLoading ? item.name : "Loading channel name...."
+                }
+                id={item._id}
+                variant={"default"}
+              />
+            </div>
+          ))}
+        </WorkSpaceSection>
+        <WorkSpaceSection
+          hint="New direct message"
+          label="DirectMessage"
+          onNew={() => {}}
+        >
+          {members?.map((item) => (
+            <UserItem
+              key={item._id}
+              id={item._id}
+              label={item.user.name}
+              image={item.user.image}
+            />
+          ))}
+        </WorkSpaceSection>
+      </div>
+    </>
   );
 };
