@@ -89,7 +89,7 @@ export const WorkspaceSidebar = () => {
           }
         >
           {channels?.map((item) => (
-            <div key={item._id}>
+            <div key={item._id} className="mt-1">
               <SidebarItem
                 Icon={HashIcon}
                 label={
