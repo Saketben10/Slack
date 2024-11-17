@@ -74,3 +74,17 @@ export const get = query({
     return channels;
   },
 });
+
+export const Remove = mutation({
+  args: { channelId: v.id("channels") },
+  handler: async (ctx, args) => {
+    const userID = await getAuthUserId(ctx);
+    if (!userID) {
+      throw new Error("unauthorized");
+    }
+
+    await ctx.db.delete(args.channelId);
+
+    return args.channelId;
+  },
+});

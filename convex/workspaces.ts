@@ -171,3 +171,36 @@ export const Delete = mutation({
     return args.id;
   },
 });
+
+// generate new Code
+
+export const generateCode = mutation({
+  args: {
+    id: v.id("workspaces"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("unauthorized");
+    }
+
+    const member = await ctx.db
+      .query("members")
+      .withIndex("by_worksapceid_id_user_id", (q) =>
+        q.eq("workspaceID", args.id).eq("userId", userId)
+      )
+      .unique();
+
+    if (!member || member.role !== "admin") {
+      throw new Error("unauthorized");
+    }
+
+    const joinCode = GenerateCode();
+
+    await ctx.db.patch(args.id, {
+      joinCode,
+    });
+
+    return args.id;
+  },
+});
