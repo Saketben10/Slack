@@ -1,3 +1,4 @@
+import { useConfirm } from "@/hooks/use-confirm";
 import { useWorkspaceId } from "@/hooks/use-params";
 import { useCurrentWorkspaces } from "@/app/api/hooks/use-current-workspace";
 
@@ -19,12 +20,13 @@ interface InviteModalProps {
 }
 
 export const InviteModal = ({ open, setOpen }: InviteModalProps) => {
-  const workspaceid = useWorkspaceId();
-  const { data } = useCurrentWorkspaces({ workspaceid });
+  const [setconfirm, ConfirmDialog] = useConfirm();
+  const id = useWorkspaceId();
+  const { data } = useCurrentWorkspaces({ id });
   const { update, isPending } = useNewJoinCode();
 
   const handleCopy = () => {
-    const inviteLink = `${window.location.origin}/join/${workspaceid}`;
+    const inviteLink = `${window.location.origin}/join/${id}`;
 
     navigator.clipboard
       .writeText(inviteLink)
@@ -32,8 +34,10 @@ export const InviteModal = ({ open, setOpen }: InviteModalProps) => {
   };
 
   const handleCode = async () => {
+    const ok = await setconfirm();
+    if (!ok) return;
     await update(
-      { workspaceid },
+      { id },
       {
         onSuccess: () => {
           toast.success("Code has beeen updated");
@@ -43,6 +47,7 @@ export const InviteModal = ({ open, setOpen }: InviteModalProps) => {
   };
   return (
     <>
+      <ConfirmDialog />
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>

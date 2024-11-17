@@ -4,9 +4,9 @@ import { useWorkspaceId } from "@/hooks/use-params";
 import { Info, Search } from "lucide-react";
 
 export const Toolbar = () => {
-  const workspaceId = useWorkspaceId();
+  const id = useWorkspaceId();
 
-  const { data, isLoading } = useCurrentWorkspaces({ id: workspaceId });
+  const { data, isLoading } = useCurrentWorkspaces({ id });
 
   return (
     <nav className="bg-[#c610c9] w-full flex justify-center items-center h-14 p-1.5 ">

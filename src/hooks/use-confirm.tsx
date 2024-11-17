@@ -10,8 +10,8 @@ import { DialogTitle } from "@radix-ui/react-dialog";
 import { useState } from "react";
 
 export const useConfirm = (
-  title: string,
-  message: string
+  title?: string,
+  message?: string
 ): [() => Promise<boolean>, () => JSX.Element] => {
   const [promise, setPromise] = useState<{
     resolve: (value: boolean) => void;
