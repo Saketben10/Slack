@@ -21,12 +21,12 @@ interface InviteModalProps {
 
 export const InviteModal = ({ open, setOpen }: InviteModalProps) => {
   const [setconfirm, ConfirmDialog] = useConfirm();
-  const id = useWorkspaceId();
-  const { data } = useCurrentWorkspaces({ id });
+  const workspaceId = useWorkspaceId();
+  const { data } = useCurrentWorkspaces({ id: workspaceId });
   const { update, isPending } = useNewJoinCode();
 
   const handleCopy = () => {
-    const inviteLink = `${window.location.origin}/join/${id}`;
+    const inviteLink = `${window.location.origin}/Join/${workspaceId}`;
 
     navigator.clipboard
       .writeText(inviteLink)
@@ -37,7 +37,7 @@ export const InviteModal = ({ open, setOpen }: InviteModalProps) => {
     const ok = await setconfirm();
     if (!ok) return;
     await update(
-      { id },
+      { id: workspaceId },
       {
         onSuccess: () => {
           toast.success("Code has beeen updated");

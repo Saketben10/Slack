@@ -70,15 +70,47 @@ export const Get = query({
     const workspaces = [];
 
     //push all workspace id into workspace array related to user
-    for (const workspaceID of workspaceIDs) {
-      const workspace = await ctx.db.get(workspaceID);
+    // for (const workspaceID of workspaceIDs) {
+    //   const workspace = await ctx.db.get(workspaceID);
+    //   if (workspace) {
+    //     workspaces.push(workspace);
+    //   }
+    // }
+
+    workspaceIDs.map(async (workspaceid) => {
+      const workspace = await ctx.db.get(workspaceid);
       if (workspace) {
         workspaces.push(workspace);
       }
-    }
+    });
 
     // return all workspaces of workspace table in convex
     return ctx.db.query("workspaces").collect();
+  },
+});
+
+export const getInfoById = query({
+  args: {
+    id: v.id("workspaces"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      return null;
+    }
+    const member = await ctx.db
+      .query("members")
+      .withIndex("by_worksapceid_id_user_id", (q) =>
+        q.eq("workspaceID", args.id).eq("userId", userId)
+      )
+      .unique();
+
+    const workspace = await ctx.db.get(args.id);
+
+    return {
+      name: workspace?.name,
+      isMember: !!member,
+    };
   },
 });
 
@@ -202,5 +234,43 @@ export const generateCode = mutation({
     });
 
     return args.id;
+  },
+});
+
+// join a  member using code
+export const join = mutation({
+  args: {
+    joincode: v.string(),
+    id: v.id("workspaces"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("unauthorized");
+    }
+    const workspace = await ctx.db.get(args.id);
+    if (!workspace) {
+      throw new Error("workspace not found");
+    }
+    if (workspace.joinCode !== args.joincode.toLowerCase()) {
+      throw new Error("Inavlid join code");
+    }
+    const existingMember = await ctx.db
+      .query("members")
+      .withIndex("by_worksapceid_id_user_id", (q) =>
+        q.eq("workspaceID", args.id).eq("userId", userId)
+      )
+      .unique();
+
+    if (existingMember) {
+      throw new Error("Already a member of this workspace");
+    }
+
+    await ctx.db.insert("members", {
+      userId,
+      workspaceID: workspace._id,
+      role: "member",
+    });
+    return workspace._id;
   },
 });
