@@ -1,4 +1,4 @@
-import { useWorkspaceId } from "@/hooks/use-params";
+import { useWorkspaceId } from "@/hooks/use-worksapceid";
 import { useCurrentMember } from "../../members/api/hooks/use-current-member";
 import { useCurrentWorkspaces } from "@/app/api/hooks/use-current-workspace";
 import { useCurrentChannels } from "../../channels/api/hooks/use-get-channels";
@@ -76,13 +76,13 @@ export const WorkspaceSidebar = () => {
           <SidebarItem
             Icon={MessageSquareText}
             label={"Threads"}
-            id="threads"
+            channeId="threads"
             variant={"default"}
           />
           <SidebarItem
             Icon={SendHorizontal}
             label={"Draft and Sent"}
-            id="drafts"
+            channeId="drafts"
             variant={"default"}
           />
         </div>
@@ -103,7 +103,7 @@ export const WorkspaceSidebar = () => {
                 label={
                   !channelisLoading ? item.name : "Loading channel name...."
                 }
-                id={item._id}
+                channeId={item._id}
                 variant={"default"}
               />
             </div>

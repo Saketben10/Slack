@@ -1,7 +1,7 @@
 "use client";
 
 import { useJoin } from "@/app/api/hooks/useJoin";
-import { useWorkspaceId } from "@/hooks/use-params";
+import { useWorkspaceId } from "@/hooks/use-worksapceid";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";

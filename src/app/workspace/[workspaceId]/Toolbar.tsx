@@ -1,6 +1,6 @@
 import { useCurrentWorkspaces } from "@/app/api/hooks/use-current-workspace";
 import { Button } from "@/components/ui/button";
-import { useWorkspaceId } from "@/hooks/use-params";
+import { useWorkspaceId } from "@/hooks/use-worksapceid";
 import { Info, Search } from "lucide-react";
 
 export const Toolbar = () => {

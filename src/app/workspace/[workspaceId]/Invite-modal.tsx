@@ -1,5 +1,5 @@
 import { useConfirm } from "@/hooks/use-confirm";
-import { useWorkspaceId } from "@/hooks/use-params";
+import { useWorkspaceId } from "@/hooks/use-worksapceid";
 import { useCurrentWorkspaces } from "@/app/api/hooks/use-current-workspace";
 
 import {

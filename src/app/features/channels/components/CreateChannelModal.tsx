@@ -13,7 +13,7 @@ import { ChangeEvent, useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 
-import { useWorkspaceId } from "@/hooks/use-params";
+import { useWorkspaceId } from "@/hooks/use-worksapceid";
 import { useCreateChannel } from "../api/hooks/use-Create-Channel";
 import { toast } from "sonner";
 // import { useCreateChannel } from "../api/hooks/use-Create-Channel";

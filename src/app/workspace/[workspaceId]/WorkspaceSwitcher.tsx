@@ -8,7 +8,7 @@ import {
   //   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useWorkspaceId } from "@/hooks/use-params";
+import { useWorkspaceId } from "@/hooks/use-worksapceid";
 import { setOpen } from "@/reducers/render";
 
 import { Loader, Plus } from "lucide-react";

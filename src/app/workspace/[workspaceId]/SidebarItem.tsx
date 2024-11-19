@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { useWorkspaceId } from "@/hooks/use-params";
+import { useWorkspaceId } from "@/hooks/use-worksapceid";
 import { cn } from "@/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 import { LucideIcon } from "lucide-react";
@@ -8,7 +8,7 @@ import { IconType } from "react-icons/lib";
 
 interface SidebarItemProps {
   label: string;
-  id: string;
+  channeId: string;
   Icon: LucideIcon | IconType;
   variant?: VariantProps<typeof sideBarVariant>["variant"];
 }
@@ -28,7 +28,12 @@ const sideBarVariant = cva(
   }
 );
 
-export const SidebarItem = ({ label, id, Icon, variant }: SidebarItemProps) => {
+export const SidebarItem = ({
+  label,
+  channeId,
+  Icon,
+  variant,
+}: SidebarItemProps) => {
   const workspaceId = useWorkspaceId();
 
   return (
@@ -38,7 +43,7 @@ export const SidebarItem = ({ label, id, Icon, variant }: SidebarItemProps) => {
       size="sm"
       asChild
     >
-      <Link href={`/workspace/${workspaceId}/channel/${id}`}>
+      <Link href={`/workspace/${workspaceId}/channel/${channeId}`}>
         <div className="flex items-center gap-2">
           <Icon className="size-3.5 mr-1 shrink-0" />
           <span className="text-sm truncate">{label}</span>
