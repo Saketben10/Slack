@@ -1,12 +1,12 @@
 "use client";
 
-// import { useGetInfo } from "@/app/api/hooks/useGetinfo";
 import { useJoin } from "@/app/api/hooks/useJoin";
 import { useWorkspaceId } from "@/hooks/use-params";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
-// import { Loader } from "lucide-react";
+
+import { Triangle } from "react-loader-spinner";
 import Image from "next/image";
 import Link from "next/link";
 import VerificationInput from "react-verification-input";
@@ -14,22 +14,23 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 import { useNewGetInfo } from "@/app/api/hooks/usenewGetInfo";
-// import { useNewGetInfo } from "@/app/api/hooks/usenewGetInfo";
+import { useEffect } from "react";
 
 const JoinPage = () => {
   const { mutate, isPending } = useJoin();
   const router = useRouter();
+
   const workspaceid = useWorkspaceId();
   console.log("workspace id using hook", workspaceid);
 
-  const { data } = useNewGetInfo({ id: workspaceid });
+  const { data, isLoading } = useNewGetInfo({ id: workspaceid });
 
   const handleJoin = (value: string) => {
     mutate(
       { id: workspaceid, joincode: value },
       {
-        onSuccess: (id) => {
-          router.replace(`/worksapce/${id}`);
+        onSuccess: (workspaceid) => {
+          router.replace(`/workspace/${workspaceid}`);
           toast.success("joined succesfully!");
         },
         onError: () => {
@@ -39,6 +40,27 @@ const JoinPage = () => {
     );
   };
 
+  useEffect(() => {
+    if (data?.isMember) {
+      router.replace(`/workspace/${workspaceid}`);
+    }
+  }, [workspaceid, router, data]);
+
+  if (isLoading) {
+    return (
+      <div className="h-full flex justify-center items-center">
+        <Triangle
+          visible={true}
+          height="80"
+          width="80"
+          color="#9b59b6"
+          ariaLabel="triangle-loading"
+          wrapperStyle={{}}
+          wrapperClass=""
+        />
+      </div>
+    );
+  }
   return (
     <div className=" h-full flex flex-col gap-y-8  items-center justify-center bg-white p-8 rounded-lg shadow-sm">
       <Image src={"/logo.svg"} width={60} height={60} alt="log" />

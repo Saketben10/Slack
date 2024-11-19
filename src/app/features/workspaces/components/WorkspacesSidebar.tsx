@@ -7,11 +7,11 @@ import { useGetMembers } from "../../members/api/hooks/use-get-member";
 import {
   AlertTriangle,
   HashIcon,
-  Loader,
   MessageSquareText,
   SendHorizontal,
 } from "lucide-react";
 
+import { Triangle } from "react-loader-spinner";
 import { SidebarItem } from "@/app/workspace/[workspaceId]/SidebarItem";
 import { UserItem } from "@/app/workspace/[workspaceId]/UserItem";
 
@@ -27,7 +27,7 @@ export const WorkspaceSidebar = () => {
     workspaceId,
   });
 
-  const { data: member, isLoading: memberisLoading } = useCurrentMember({
+  const { data: currentmember, isLoading: memberisLoading } = useCurrentMember({
     workspaceId,
   });
 
@@ -43,12 +43,20 @@ export const WorkspaceSidebar = () => {
   if (workspaceisLoading || memberisLoading) {
     return (
       <div className="flex flex-col bg-[#5E2C5F] h-full items-center justify-center">
-        <Loader className="size-5 animate-spin text-white" />
+        <Triangle
+          visible={true}
+          height="80"
+          width="80"
+          color="#9b59b6"
+          ariaLabel="triangle-loading"
+          wrapperStyle={{}}
+          wrapperClass=""
+        />
       </div>
     );
   }
 
-  if (!currentworkspace || !member) {
+  if (!currentworkspace || !currentmember) {
     return (
       <div className="flex flex-col  gap-y-2 bg-[#5E2C5F] h-full items-center justify-center">
         <AlertTriangle className="size-5 text-white" />
@@ -62,7 +70,7 @@ export const WorkspaceSidebar = () => {
       <div className="flex flex-col bg-[#5E2C5F]">
         <WorkSpaceHeader
           workspace={currentworkspace}
-          isAdmin={member?.role === "admin"}
+          isAdmin={currentmember?.role === "admin"}
         />
         <div className="flex flex-col px-2 mt-3 space-y-2 ">
           <SidebarItem
@@ -83,7 +91,7 @@ export const WorkspaceSidebar = () => {
           hint="New Channel"
           label="channels"
           onNew={
-            member.role === "admin"
+            currentmember.role === "admin"
               ? () => dispatch(channelToggle(true))
               : undefined
           }

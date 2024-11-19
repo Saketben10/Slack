@@ -52,7 +52,7 @@ export const get = query({
     const member = await ctx.db
       .query("members")
       .withIndex("by_worksapceid_id_user_id", (q) =>
-        q.eq("workspaceID", args.workspaceId)
+        q.eq("workspaceID", args.workspaceId).eq("userId", userId)
       )
       .unique();
 
