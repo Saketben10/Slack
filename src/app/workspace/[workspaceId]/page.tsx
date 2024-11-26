@@ -21,7 +21,9 @@ const WorkspaceIdPage = () => {
   const { data: workspaces, isLoading: workspaceIsLoading } =
     useCurrentWorkspaces({ id: workspaceId });
 
-  const { data: currentMember } = useCurrentMember({ workspaceId });
+  const { data: currentMember, isLoading: memberisLoading } = useCurrentMember({
+    workspaceId,
+  });
   const channeId = useMemo(() => channels?.[0]?._id, [channels]);
 
   const dispatch = useDispatch<AppDispatch>();
@@ -29,7 +31,13 @@ const WorkspaceIdPage = () => {
   const router = useRouter();
 
   useEffect(() => {
-    if (workspaceIsLoading || channelIsLoading || !workspaces) {
+    if (
+      workspaceIsLoading ||
+      channelIsLoading ||
+      !workspaces ||
+      memberisLoading ||
+      !currentMember
+    ) {
       return;
     }
 
@@ -50,9 +58,10 @@ const WorkspaceIdPage = () => {
     workspaceId,
     channelState,
     currentMember,
+    memberisLoading,
   ]);
 
-  return workspaceIsLoading || channelIsLoading ? (
+  return workspaceIsLoading || channelIsLoading || memberisLoading ? (
     <div className="h-full flex-1 flex items-center justify-center flex-col gap-2">
       <Triangle
         visible={true}
@@ -62,7 +71,7 @@ const WorkspaceIdPage = () => {
         ariaLabel="triangle-loading"
       />
     </div>
-  ) : !workspaces ? (
+  ) : !workspaces || !currentMember ? (
     <div>
       <div className="h-full flex-1 flex items-center justify-center flex-col gap-2">
         <AlertTriangle className="size-4 animate-spin text-muted-foreground" />

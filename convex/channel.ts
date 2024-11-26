@@ -75,6 +75,7 @@ export const get = query({
   },
 });
 
+//delete a channel
 export const Remove = mutation({
   args: { iD: v.id("channels") },
   handler: async (ctx, args) => {
@@ -86,5 +87,71 @@ export const Remove = mutation({
     await ctx.db.delete(args.iD);
 
     return args.iD;
+  },
+});
+
+// get a channelById
+
+export const getById = query({
+  args: {
+    channelId: v.id("channels"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      return null;
+    }
+
+    const channel = await ctx.db.get(args.channelId);
+
+    if (!channel) {
+      return null;
+    }
+
+    const member = await ctx.db
+      .query("members")
+      .withIndex("by_worksapceid_id_user_id", (q) =>
+        q.eq("workspaceID", channel.workspaceID).eq("userId", userId)
+      )
+      .unique();
+
+    if (!member) {
+      return null;
+    }
+
+    return channel;
+  },
+});
+
+// update the channel
+
+export const update = mutation({
+  args: {
+    workspaceid: v.id("workspaces"),
+    channelid: v.id("channels"),
+    name: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("Unauthorized");
+    }
+
+    const member = await ctx.db
+      .query("members")
+      .withIndex("by_worksapce_id", (q) =>
+        q.eq("workspaceID", args.workspaceid)
+      )
+      .unique();
+
+    if (!member || member.role === "member") {
+      throw new Error("unauthorized");
+    }
+
+    await ctx.db.patch(args.channelid, {
+      name: args.name,
+    });
+
+    return args.channelid;
   },
 });
