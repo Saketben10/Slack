@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 import { api } from "../../../../../../convex/_generated/api";
 import { Id } from "../../../../../../convex/_generated/dataModel";
 
-type RequestType = { channelId: Id<"channels"> };
+type RequestType = { channelid: Id<"channels"> };
 type ResponseType = Id<"channels">;
 
 type options = {
@@ -14,7 +14,7 @@ type options = {
   throwError?: boolean;
 };
 
-export const useDeleteChannel = () => {
+export const useRemoveChannel = () => {
   const [updatadData, setupdatedData] = useState<ResponseType>();
   const [status, setStatus] = useState<"pending" | "error" | "settled">();
 
@@ -22,7 +22,7 @@ export const useDeleteChannel = () => {
   const isError = useMemo(() => status === "error", [status]);
   const isSettled = useMemo(() => status === "settled", [status]);
 
-  const deletion = useMutation(api.channel.Remove);
+  const deletion = useMutation(api.channel.remove);
 
   const remove = useCallback(
     async (value: RequestType, options?: options) => {
@@ -30,7 +30,7 @@ export const useDeleteChannel = () => {
         setStatus("pending");
         const response = await deletion(value);
 
-        options?.onSuccess?.(value?.channelId);
+        options?.onSuccess?.(value?.channelid);
         setupdatedData(response);
       } catch {
         options?.onError?.();

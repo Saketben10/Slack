@@ -2,6 +2,8 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 
+// update
+
 //create a channel
 
 export const create = mutation({
@@ -127,7 +129,6 @@ export const getById = query({
 
 export const update = mutation({
   args: {
-    workspaceid: v.id("workspaces"),
     channelid: v.id("channels"),
     name: v.string(),
   },
@@ -137,10 +138,15 @@ export const update = mutation({
       throw new Error("Unauthorized");
     }
 
+    const channel = await ctx.db.get(args.channelid);
+    if (!channel) {
+      throw new Error("channel not found");
+    }
+
     const member = await ctx.db
       .query("members")
       .withIndex("by_worksapce_id", (q) =>
-        q.eq("workspaceID", args.workspaceid)
+        q.eq("workspaceID", channel.workspaceID)
       )
       .unique();
 
@@ -151,6 +157,39 @@ export const update = mutation({
     await ctx.db.patch(args.channelid, {
       name: args.name,
     });
+
+    return args.channelid;
+  },
+});
+
+//delete a channel
+
+export const remove = mutation({
+  args: {
+    channelid: v.id("channels"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("Unauthorized");
+    }
+    const channel = await ctx.db.get(args.channelid);
+    if (!channel) {
+      throw new Error("channel not found");
+    }
+    const member = await ctx.db
+      .query("members")
+      .withIndex("by_worksapce_id", (q) =>
+        q.eq("workspaceID", channel.workspaceID)
+      )
+      .unique();
+
+    if (!member || member.role === "member") {
+      throw new Error("unauthorized");
+    }
+    //TODO: remove associated masseges
+
+    await ctx.db.delete(args.channelid);
 
     return args.channelid;
   },

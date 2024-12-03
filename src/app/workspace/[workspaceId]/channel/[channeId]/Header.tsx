@@ -1,3 +1,5 @@
+import { useRemoveChannel } from "@/app/features/channels/api/hooks/use-remove-channels";
+import { useUpdateChannel } from "@/app/features/channels/api/hooks/use-update-channel";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -9,11 +11,13 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { useChannelId } from "@/hooks/use-channelId";
 import { TrashIcon } from "lucide-react";
 
 import { ChangeEvent, useState } from "react";
 
 import { FaChevronDown } from "react-icons/fa";
+import { toast } from "sonner";
 
 interface HeaderProps {
   channelName: string;
@@ -21,12 +25,46 @@ interface HeaderProps {
 
 export const Header = ({ channelName }: HeaderProps) => {
   const [oepn, setOpen] = useState(false);
-  const [value, setValue] = useState(channelName);
+  const [value, setValue] = useState<string>(channelName);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\s+/g, "-").toLowerCase();
     setValue(value);
   };
+  const channelid = useChannelId();
+  const { update, isLoading: updatedChannelIsLoading } = useUpdateChannel();
+  const { remove, isPending: deletedChannelIsLoading } = useRemoveChannel();
+
+  const handleUpdate = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    update(
+      { name: value, channelid: channelid },
+      {
+        onSuccess: () => {
+          toast.success("channel updated");
+          setValue("");
+        },
+        onError: () => {
+          toast.error("failed to update channel");
+        },
+      }
+    );
+  };
+
+  const handleRemove = () => {
+    remove(
+      { channelid: channelid },
+      {
+        onSuccess: () => {
+          toast.success("channel is deleted");
+        },
+        onError: () => {
+          toast.error("failed to delete the channel");
+        },
+      }
+    );
+  };
+
   return (
     <div className="bg-whiten border-b h-[49px] flex items-center px-4 overflow-hidden">
       <Dialog>
@@ -63,10 +101,10 @@ export const Header = ({ channelName }: HeaderProps) => {
                 <DialogHeader>
                   <DialogTitle>Rename This Channel</DialogTitle>
                 </DialogHeader>
-                <form className="space-y-4">
+                <form className="space-y-4" onSubmit={handleUpdate}>
                   <Input
                     value={value}
-                    disabled={false}
+                    disabled={updatedChannelIsLoading}
                     onChange={handleChange}
                     required
                     autoFocus
@@ -85,7 +123,11 @@ export const Header = ({ channelName }: HeaderProps) => {
                 </form>
               </DialogContent>
             </Dialog>
-            <button className="flex items-center gap-x-2 px-5 py-4 bg-white rounded-lg cursor-pointer border hover:bg-gray-50 text-rose-600">
+            <button
+              className="flex items-center gap-x-2 px-5 py-4 bg-white rounded-lg cursor-pointer border hover:bg-gray-50 text-rose-600"
+              onClick={handleRemove}
+              disabled={deletedChannelIsLoading}
+            >
               <TrashIcon className="size-4" />
               <p className="text-sm font-semibold">Delete Channel</p>
             </button>
