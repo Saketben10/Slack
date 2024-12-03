@@ -1,5 +1,11 @@
+import { useConfirm } from "@/hooks/use-confirm";
+import { useWorkspaceId } from "@/hooks/use-worksapceid";
+import { useRouter } from "next/navigation";
+import { useCurrentMember } from "@/app/features/members/api/hooks/use-current-member";
+import { useChannelId } from "@/hooks/use-channelId";
 import { useRemoveChannel } from "@/app/features/channels/api/hooks/use-remove-channels";
 import { useUpdateChannel } from "@/app/features/channels/api/hooks/use-update-channel";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,7 +17,6 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { useChannelId } from "@/hooks/use-channelId";
 import { TrashIcon } from "lucide-react";
 
 import { ChangeEvent, useState } from "react";
@@ -26,15 +31,31 @@ interface HeaderProps {
 export const Header = ({ channelName }: HeaderProps) => {
   const [oepn, setOpen] = useState(false);
   const [value, setValue] = useState<string>(channelName);
+  const [confirm, ConfirmDialog] = useConfirm(
+    "Delete this channel?",
+    "you are about to delete this channel , this action is irreversible"
+  );
+  const worksapceId = useWorkspaceId();
+  const router = useRouter();
+  const { data: member } = useCurrentMember({ workspaceId: worksapceId });
+  const channelid = useChannelId();
 
+  const { update, isLoading: updatedChannelIsLoading } = useUpdateChannel();
+  const { remove, isPending: deletedChannelIsLoading } = useRemoveChannel();
+
+  // text from input
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\s+/g, "-").toLowerCase();
     setValue(value);
   };
-  const channelid = useChannelId();
-  const { update, isLoading: updatedChannelIsLoading } = useUpdateChannel();
-  const { remove, isPending: deletedChannelIsLoading } = useRemoveChannel();
 
+  const handleEditOpen = (value: boolean) => {
+    if (member?.role !== "admin") {
+      return;
+    }
+    setOpen(value);
+  };
+  // method to handle update of channel
   const handleUpdate = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     update(
@@ -43,20 +64,29 @@ export const Header = ({ channelName }: HeaderProps) => {
         onSuccess: () => {
           toast.success("channel updated");
           setValue("");
+          setOpen(false);
         },
         onError: () => {
           toast.error("failed to update channel");
+          setOpen(false);
         },
       }
     );
   };
 
-  const handleRemove = () => {
+  // method to handle deletion of channel
+  const handleRemove = async () => {
+    const ok = await confirm();
+    if (!ok) {
+      return;
+    }
+
     remove(
       { channelid: channelid },
       {
         onSuccess: () => {
           toast.success("channel is deleted");
+          router.push(`/workspace/${worksapceId}`);
         },
         onError: () => {
           toast.error("failed to delete the channel");
@@ -67,6 +97,7 @@ export const Header = ({ channelName }: HeaderProps) => {
 
   return (
     <div className="bg-whiten border-b h-[49px] flex items-center px-4 overflow-hidden">
+      <ConfirmDialog />
       <Dialog>
         <DialogTrigger asChild>
           <Button
@@ -84,7 +115,7 @@ export const Header = ({ channelName }: HeaderProps) => {
           </DialogHeader>
 
           <div className="px-4 pb-4 flex flex-col gap-y-2">
-            <Dialog open={oepn} onOpenChange={setOpen}>
+            <Dialog open={oepn} onOpenChange={handleEditOpen}>
               <DialogTrigger asChild>
                 <div className="px-5 py-4 bg-white rounded-lg border cursor-pointer hover:bg-gray-50">
                   <div className="flex items-center justify-between">
