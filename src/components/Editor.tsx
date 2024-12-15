@@ -7,23 +7,57 @@ import { Button } from "./ui/button";
 import Quill, { Delta, QuillOptions, Op } from "quill";
 import "quill/dist/quill.snow.css";
 
-import { useEffect, useRef } from "react";
+import {
+  MutableRefObject,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { Hint } from "./ui/hint";
+import { cn } from "@/lib/utils";
 
 type EditorValue = {
   image: File | null;
-  body: string;
+  body: string | null;
 };
 interface EditorPorps {
   onSubmit: ({ image, body }: EditorValue) => void;
   onCancel?: () => void;
   placeholder?: string;
+  disabled?: boolean;
+  innerRef?: MutableRefObject<Quill | null>;
+
   defaultValue?: Delta | Op[];
   variant?: "create" | "update";
 }
 
-const Editor = ({ variant = "create" }: EditorPorps) => {
+const Editor = ({
+  variant = "create",
+  onCancel,
+  onSubmit,
+  placeholder = "write somehting....",
+  defaultValue = [],
+  innerRef,
+  disabled = false,
+}: EditorPorps) => {
+  const [Text, setText] = useState("");
+  const [isToolBarVisisble, setisToolBarVisible] = useState(true);
+
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const disableRef = useRef(disabled);
+  const submitRef = useRef(onSubmit);
+  const placeholderRef = useRef(placeholder);
+  const quilRef = useRef<Quill | null>(null);
+  const defaultvalueRef = useRef(defaultValue);
+
+  useLayoutEffect(() => {
+    submitRef.current = onSubmit;
+    disableRef.current = disabled;
+    placeholderRef.current = placeholder;
+    quilRef.current = null;
+    defaultvalueRef.current = defaultValue;
+  });
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -34,15 +68,70 @@ const Editor = ({ variant = "create" }: EditorPorps) => {
 
     const options: QuillOptions = {
       theme: "snow",
+      placeholder: placeholderRef.current,
+      modules: {
+        toolbaar: [
+          ["bold", "italic", "strike"],
+          ["link"],
+          [{ list: "ordered" }, { list: "bullet" }],
+        ],
+        keyboard: {
+          bindings: {
+            enter: {
+              key: "Enter",
+              handler: () => {
+                //TODO: submit form
+                return;
+              },
+            },
+            shift_enter: {
+              key: "Enter",
+              shiftkey: true,
+              handler: () => {
+                quill.insertText(quill.getSelection()?.index || 0, "\n");
+              },
+            },
+          },
+        },
+      },
     };
-    new Quill(editorContainer, options);
+
+    const quill = new Quill(editorContainer, options);
+    quilRef.current = quill;
+    quilRef.current.focus();
+
+    if (innerRef) {
+      innerRef.current = quill;
+    }
+
+    quill.setContents(defaultvalueRef.current);
+    setText(quill.getText());
+
+    quill.on(Quill.events.TEXT_CHANGE, () => {
+      setText(quill.getText());
+    });
 
     return () => {
+      if (quilRef.current) {
+        quilRef.current = null;
+      }
+      if (innerRef?.current) {
+        innerRef.current = null;
+      }
       if (container) {
         container.innerHTML = "";
       }
     };
-  }, []);
+  }, [innerRef]);
+  const isEmpty = Text.replace(/<(.|\n)*?>/g, "").trim().length === 0;
+
+  const toggleToolBar = () => {
+    setisToolBarVisible((current) => !current);
+    const toolBarElement = containerRef.current?.querySelector(".ql-toolbar");
+    if (toolBarElement) {
+      toolBarElement.classList.toggle("hidden");
+    }
+  };
 
   return (
     <div className="flex flex-col">
@@ -52,19 +141,21 @@ const Editor = ({ variant = "create" }: EditorPorps) => {
       >
         <div ref={containerRef} className="h-full ql-custom" />
         <div className="flex px-2 pb-2 z-[5]">
-          <Hint label="hide formatting">
+          <Hint
+            label={isToolBarVisisble ? "Hide Formatting" : "show Formating"}
+          >
             <Button
-              disabled={false}
+              disabled={disabled}
               variant={"ghost"}
               size="iconsm"
-              onClick={() => {}}
+              onClick={toggleToolBar}
             >
               <PiTextAaBold className="size-4" />
             </Button>
           </Hint>
           <Hint label="emoji">
             <Button
-              disabled={false}
+              disabled={disabled}
               variant={"ghost"}
               size="iconsm"
               onClick={() => {}}
@@ -75,7 +166,7 @@ const Editor = ({ variant = "create" }: EditorPorps) => {
           {variant === "create" && (
             <Hint label="image">
               <Button
-                disabled={false}
+                disabled={disabled}
                 variant={"ghost"}
                 size="iconsm"
                 onClick={() => {}}
@@ -91,7 +182,7 @@ const Editor = ({ variant = "create" }: EditorPorps) => {
                 variant={"outline"}
                 onClick={() => {}}
                 size={"sm"}
-                disabled={false}
+                disabled={disabled}
               >
                 Cancel
               </Button>
@@ -100,7 +191,7 @@ const Editor = ({ variant = "create" }: EditorPorps) => {
                 variant={"outline"}
                 onClick={() => {}}
                 size={"sm"}
-                disabled={false}
+                disabled={disabled}
               >
                 Save
               </Button>
@@ -109,10 +200,15 @@ const Editor = ({ variant = "create" }: EditorPorps) => {
           {variant === "create" && (
             <Hint label="send">
               <Button
-                disabled={false}
+                disabled={disabled || isEmpty}
                 onClick={() => {}}
                 size={"iconsm"}
-                className="ml-auto bg-[#007a5a] hover:bg-[#007a5a]/80 text-white"
+                className={cn(
+                  "ml-auto",
+                  isEmpty
+                    ? "bg-white hover:bg-white text-muted-foreground "
+                    : " bg-[#007a5a] hover:bg-[#007a5a]/80 text-white"
+                )}
               >
                 <Send className="size-4" />
               </Button>
@@ -122,7 +218,7 @@ const Editor = ({ variant = "create" }: EditorPorps) => {
       </div>
       <div className="p-2 text-[10px] text-muted-foreground flex  justify-end">
         <p>
-          <strong>Shift +Return</strong> add a new line
+          <strong>Shift +Enter</strong> add a new line
         </p>
       </div>
     </div>
