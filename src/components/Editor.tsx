@@ -16,6 +16,7 @@ import {
 } from "react";
 import { Hint } from "./ui/hint";
 import { cn } from "@/lib/utils";
+import { EmojiPopOver } from "./Create-emoji";
 
 type EditorValue = {
   image: File | null;
@@ -133,6 +134,11 @@ const Editor = ({
     }
   };
 
+  const OnemojiSelect = (emoji: any) => {
+    const quill = quilRef.current;
+    quill?.insertText(quill?.getSelection()?.index || 0, emoji.native);
+  };
+
   return (
     <div className="flex flex-col">
       <div
@@ -153,7 +159,7 @@ const Editor = ({
               <PiTextAaBold className="size-4" />
             </Button>
           </Hint>
-          <Hint label="emoji">
+          <EmojiPopOver onemojiSelect={OnemojiSelect} label="emoji">
             <Button
               disabled={disabled}
               variant={"ghost"}
@@ -162,7 +168,7 @@ const Editor = ({
             >
               <Smile className="size-4" />
             </Button>
-          </Hint>
+          </EmojiPopOver>
           {variant === "create" && (
             <Hint label="image">
               <Button
@@ -216,11 +222,18 @@ const Editor = ({
           )}
         </div>
       </div>
-      <div className="p-2 text-[10px] text-muted-foreground flex  justify-end">
-        <p>
-          <strong>Shift +Enter</strong> add a new line
-        </p>
-      </div>
+      {variant === "create" && (
+        <div
+          className={cn(
+            "p-2 text-[10px] text-muted-foreground flex  opacity-0 transition justify-end",
+            !isEmpty && "opacity-100 "
+          )}
+        >
+          <p>
+            <strong>Shift +Enter</strong> add a new line
+          </p>
+        </div>
+      )}
     </div>
   );
 };
